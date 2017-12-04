@@ -22,17 +22,16 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, HTDOCS_FOLDER)));
 
 app.post('/importgestib', function(req, res) {
-  console.log(req.xmlfile)
-  console.log(req.files)
-  console.log(req.files.xmlfile)
-  if (!req.files)
+
+  
+  if (!req.files.xmlfile)
     return res.status(400).send('No files were uploaded.');
  
-  console.log("A");
   // The name of the input field (i.e. "file") is used to retrieve the uploaded file
   var xmlfile = req.files.xmlfile;
  
   console.log(xmlfile);
+  console.log(xmlfile.data);
   // Use the mv() method to place the file somewhere on your server
   /*sampleFile.mv('/somewhere/on/your/server/filename.jpg', function(err) {
     if (err)
@@ -40,7 +39,7 @@ app.post('/importgestib', function(req, res) {
  
     res.send('File uploaded!');
   });*/
-  res.send(xmlfile);
+  res.send(xmlfile.data);
 });
 
 // Add some routing
