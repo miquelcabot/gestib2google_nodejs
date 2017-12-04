@@ -27,7 +27,8 @@
   },
   "homepage": "https://github.com/miquelcabot/gestib2googleweb#readme",
   "dependencies": {
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "express-fileupload": "^0.3.0"
   },
   "devDependencies": {
     "mocha": "^2.3.3"
