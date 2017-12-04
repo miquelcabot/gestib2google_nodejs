@@ -1,9 +1,11 @@
 var domainuser = require("./domainuser");
 
 var a = new domainuser.DomainUser("iesemilidarder.com", 1, "Pep", 
-    "Guardiola Sanç", "Guardiola", "Sanç", "", false, false);
+    "Guardiola Sanç", "Guardiola", "Sanç", "", false, true, ["eso1","eso2"]);
 
 console.log(a);
 console.log(a.toString());
 console.log(a.email());
 console.log(a.user());
+console.log(a.groupswithprefix());
+console.log(a.groupswithprefixadded());

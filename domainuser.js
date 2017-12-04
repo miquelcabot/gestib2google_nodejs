@@ -60,6 +60,30 @@ function DomainUser(domain, id, name, surname, surname1, surname2, domainemail, 
   this.user = function() {
     return this.email().replace("@"+this.domain, "");
   }
+
+  this.groupswithprefix = function() {
+    var gr = [];
+    for (var i = 0; i < this.groups.length; i++) {
+      group = this.groups[i];
+      if (group.startsWith("alumnat.") || group.startsWith("ee.")) {
+        gr.push(group);
+      }
+    }
+    return gr;
+  }
+
+  this.groupswithprefixadded = function() {
+    var gr = [];
+    for (var i = 0; i < this.groups.length; i++) {
+      group = this.groups[i];
+      if (this.teacher) {
+        gr.push("ee."+group);
+      } else {
+        gr.push("alumnat."+group);
+      }
+    } 
+    return gr;
+  }
 }
 
 // toString override added to prototype of DomainUser class
