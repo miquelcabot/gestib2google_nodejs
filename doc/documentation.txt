@@ -1,0 +1,9 @@
+
+Google Directory API: Getting Started - Node.js Quickstart
+https://developers.google.com/admin-sdk/directory/v1/quickstart/nodejs
+
+Authenticating Users with Node.js
+https://cloud.google.com/nodejs/getting-started/authenticate-users
+
+Google's officially supported Node.js client library for accessing Google APIs.
+https://github.com/google/google-api-nodejs-client
