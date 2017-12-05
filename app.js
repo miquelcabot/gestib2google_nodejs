@@ -22,8 +22,6 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, HTDOCS_FOLDER)));
 
 app.post('/importgestib', function(req, res) {
-
-  
   if (!req.files.xmlfile)
     return res.status(400).send('No files were uploaded.');
  
@@ -39,7 +37,9 @@ app.post('/importgestib', function(req, res) {
  
     res.send('File uploaded!');
   });*/
-  res.send(xmlfile.data);
+  res
+    .status(200)
+    .send(xmlfile.data);
 });
 
 // Add some routing
