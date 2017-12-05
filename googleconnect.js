@@ -13,52 +13,50 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'admin-directory_v1-nodejs.json';
 
-// Load client secrets from a local file.
-fs.readFile('client_secret.json', function processClientSecrets(err, content) {
-  if (err) {
+/**
+ * Get the authorization client credentials.
+ */
+function getCredentials() {
+  // Load client secrets from a local file.
+  try {
+    content = fs.readFileSync('client_secret.json');
+    return JSON.parse(content);
+  } catch(err) {
     console.log('Error loading client secret file: ' + err);
-    return;
+    throw err;
   }
-  // Authorize a client with the loaded credentials, then call the
-  // Directory API.
-  authorize(JSON.parse(content), listUsers);
-});
+}
 
 /**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- *
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
+ * Create an OAuth2 client with the given credentials
  */
-function authorize(credentials, callback) {
+function authorize() {
+  var credentials = getCredentials();
+
   var clientSecret = credentials.installed.client_secret;
   var clientId = credentials.installed.client_id;
   var redirectUrl = credentials.installed.redirect_uris[0];
+
   var auth = new googleAuth();
   var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
   // Check if we have previously stored a token.
-  console.log(TOKEN_PATH);
-  fs.readFile(TOKEN_PATH, function(err, token) {
-    if (err) {
-      getNewToken(oauth2Client, callback);
-    } else {
-      oauth2Client.credentials = JSON.parse(token);
-      callback(oauth2Client);
-    }
-  });
+  try {
+    token = fs.readFileSync(TOKEN_PATH);
+    oauth2Client.credentials = JSON.parse(token);
+    return oauth2Client;
+  } catch (err) {
+    newoauth2Client = getNewToken(oauth2Client);
+    return newoauth2Client;
+  }
 }
 
 /**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
+ * Get and store new token after prompting for user authorization
  *
  * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback to call with the authorized
- *     client.
  */
-function getNewToken(oauth2Client, callback) {
+function getNewToken(oauth2Client) {
   var authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES
@@ -77,7 +75,7 @@ function getNewToken(oauth2Client, callback) {
       }
       oauth2Client.credentials = token;
       storeToken(token);
-      callback(oauth2Client);
+      return oauth2Client;
     });
   });
 }
@@ -101,11 +99,11 @@ function storeToken(token) {
 
 /**
  * Lists the first 10 users in the domain.
- *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listUsers(auth) {
+function listUsers() {
   var service = google.admin('directory_v1');
+  var auth = authorize();
+
   service.users.list({
     auth: auth,
     customer: 'my_customer',
@@ -127,4 +125,39 @@ function listUsers(auth) {
       }
     }
   });
+}
+
+function getDomainUsers(domain) {
+  var domainUsers = {};
+  //var domainGroups = getDomainGroups(domain);
+
+  var service = google.admin('directory_v1');
+
+  var auth = authorize();
+
+  service.users.list({
+    auth: auth,
+    customer: 'my_customer',
+    maxResults: 5,
+    orderBy: 'email'
+  }, function(err, response) {
+    if (err) {
+      console.log('The API returned an error: ' + err);
+      return;
+    }
+    var users = response.users;
+    if (users.length == 0) {
+      console.log('No users in the domain.');
+    } else {
+      console.log('Users:');
+      for (var i = 0; i < users.length; i++) {
+        var user = users[i];
+        console.log('%s (%s)', user.primaryEmail, user.name.fullName);
+      }
+    }
+  });
+}
+
+module.exports = {
+  getDomainUsers: getDomainUsers
 }

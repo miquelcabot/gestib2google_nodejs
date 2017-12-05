@@ -58,3 +58,4 @@ typings/
 .env
 
 client_secret.json
+package-lock.json
