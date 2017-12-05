@@ -127,13 +127,46 @@ function listUsers() {
   });
 }
 
+function getDomainGroups(service, auth, domain) {
+  console.log('Loading domain groups...');
+  
+  service.groups.list({
+    auth: auth,
+    customer: 'my_customer',
+    maxResults: 100000
+  }, function(err, response) {
+    if (err) {
+      console.log('The API returned an error: ' + err);
+      return;
+    }
+    var groups = response.groups;
+    for (var i = 0; i < groups.length; i++) {
+      // We read the members of this group
+      var group = groups[i];
+      console.log('Loading members of "'+group.email.replace("@"+domain, "")+'" group...')
+      var membersgroup = [];
+      
+      service.members.list({
+        auth: auth,
+        groupKey: group.id,
+        maxResults: 100000
+      }, function(err, response) {
+          console.log(response);
+        
+      });
+    }
+  });
+}
+
 function getDomainUsers(domain) {
-  var domainUsers = {};
-  //var domainGroups = getDomainGroups(domain);
-
   var service = google.admin('directory_v1');
-
   var auth = authorize();
+  
+  var domainGroups = getDomainGroups(service, auth, domain);
+  var domainUsers = {};
+  
+  console.log('Loading domain users...');
+  
 
   service.users.list({
     auth: auth,
