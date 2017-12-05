@@ -2,6 +2,7 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+var domaingroup = require("./domaingroup");
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/admin-directory_v1-nodejs.json
@@ -129,6 +130,7 @@ function listUsers() {
 
 function getDomainGroups(service, auth, domain) {
   console.log('Loading domain groups...');
+  var domainGroups = {};
   
   service.groups.list({
     auth: auth,
@@ -143,19 +145,34 @@ function getDomainGroups(service, auth, domain) {
     for (var i = 0; i < groups.length; i++) {
       // We read the members of this group
       var group = groups[i];
-      console.log('Loading members of "'+group.email.replace("@"+domain, "")+'" group...')
-      var membersgroup = [];
-      
+      var groupName = group.email.replace("@"+domain, "");
+      console.log('Loading members of "'+groupName+'" group...')
+
       service.members.list({
         auth: auth,
         groupKey: group.id,
         maxResults: 100000
       }, function(err, response) {
-          console.log(response);
-        
+        if (err) {
+          console.log('The API returned an error: ' + err);
+          return;
+        }
+        var membersgroup = [];
+        if (response.members) {
+          var members = response.members;
+          for (var j = 0; j < members.length; j++) {
+            var member = members[j];
+            membersgroup.push(member.email);
+          }
+          domainGroups[groupName] = new domaingroup.DomainGroup(
+            groupName,
+            membersgroup
+            );
+        }
       });
     }
   });
+  return domainGroups;
 }
 
 function getDomainUsers(domain) {
@@ -166,7 +183,6 @@ function getDomainUsers(domain) {
   var domainUsers = {};
   
   console.log('Loading domain users...');
-  
 
   service.users.list({
     auth: auth,
