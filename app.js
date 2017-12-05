@@ -1,6 +1,8 @@
 var express = require('express');
 var path = require('path');
 var fileUpload = require('express-fileupload');
+var parseString = require('xml2js').parseString;
+var readxmlfile = require('./readxmlfile.js');
 
 var app = express();
 app.use(fileUpload());
@@ -22,24 +24,18 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, HTDOCS_FOLDER)));
 
 app.post('/importgestib', function(req, res) {
+  console.log("Received the XML file to import");
   if (!req.files.xmlfile)
     return res.status(400).send('No files were uploaded.');
- 
-  // The name of the input field (i.e. "file") is used to retrieve the uploaded file
+  
   var xmlfile = req.files.xmlfile;
- 
-  console.log(xmlfile);
-  console.log(xmlfile.data);
-  // Use the mv() method to place the file somewhere on your server
-  /*sampleFile.mv('/somewhere/on/your/server/filename.jpg', function(err) {
-    if (err)
-      return res.status(500).send(err);
- 
-    res.send('File uploaded!');
-  });*/
+
+  parseString(xmlfile.data, function (err, result) {
+    readxmlfile.readXmlFile(result);
+  });
   res
     .status(200)
-    .send(xmlfile.data);
+    .send("OK");
 });
 
 // Add some routing
