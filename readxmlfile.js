@@ -98,7 +98,7 @@ function readXmlTimeTable(xmlfile, xmlgroups) {
     return xmltimetable;
 }
 
-function readXmlUsers(xmlfile, xmlgroups, xmltimetable, domain) {
+function readXmlUsers(xmlfile, xmlgroups, xmltutors, xmltimetable, domain) {
     console.log("Loading XML users...");
     var xmlusers = {};
     
@@ -121,6 +121,7 @@ function readXmlUsers(xmlfile, xmlgroups, xmltimetable, domain) {
             null,           // domainemail
             false,          // suspended
             false,          // teacher 
+            false,          // tutor
             emailsstudent   // groups
         );
     }
@@ -144,6 +145,7 @@ function readXmlUsers(xmlfile, xmlgroups, xmltimetable, domain) {
             null,           // domainemail
             false,          // suspended
             true,           // teacher 
+            xmltutors.includes(teacher.codi),  // tutor
             emailsteacher   // groups
         );
     }
@@ -153,7 +155,8 @@ function readXmlUsers(xmlfile, xmlgroups, xmltimetable, domain) {
 function readXmlFile(xmlfile, domain) {
     var groupstutors = readXmlGroups(xmlfile);
     var xmltimetable = readXmlTimeTable(xmlfile, groupstutors.xmlgroups);
-    var xmlusers = readXmlUsers(xmlfile, groupstutors.xmlgroups, xmltimetable, domain);
+    var xmlusers = readXmlUsers(xmlfile, groupstutors.xmlgroups, 
+        groupstutors.xmltutors, xmltimetable, domain);
 
     return xmlusers;
 }

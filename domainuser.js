@@ -30,7 +30,8 @@ function normalizedname(name) {
   }
 }
 
-function DomainUser(domain, id, name, surname, surname1, surname2, domainemail, suspended, teacher, groups) {
+function DomainUser(domain, id, name, surname, surname1, surname2, domainemail, 
+    suspended, teacher, tutor, groups) {
   this.domain = domain;
   this.id = id;
   this.name = name;
@@ -40,6 +41,7 @@ function DomainUser(domain, id, name, surname, surname1, surname2, domainemail, 
   this.domainemail = domainemail;
   this.suspended = suspended;
   this.teacher = teacher;
+  this.tutor = tutor;
   this.groups = groups;
 
   this.email = function() {
