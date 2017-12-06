@@ -1,5 +1,8 @@
 var domainuser = require("./domainuser");
 var googleconnect = require("./googleconnect");
+var fs = require('fs');
+var parseString = require('xml2js').parseString;
+var readxmlfile = require('./readxmlfile.js');
 
 var a = new domainuser.DomainUser("iesemilidarder.com", 1, "Pep", 
     "Guardiola Sanç", "Guardiola", "Sanç", "", false, true, ["eso1","eso2"]);
@@ -12,4 +15,11 @@ console.log(a.groupswithprefix());
 console.log(a.groupswithprefixadded());
 
 
-googleconnect.getDomainUsers("iesemilidarder.com");
+
+//googleconnect.getDomainUsers("iesemilidarder.com");
+
+// Test read xml file
+content = fs.readFileSync('exportacioDadesCentre.xml');
+parseString(content, function (err, result) {
+  readxmlfile.readXmlFile(result);
+});
