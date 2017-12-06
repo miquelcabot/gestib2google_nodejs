@@ -30,7 +30,6 @@ app.post('/importgestib', function(req, res) {
   
   var xmlfile = req.files.xmlfile;
 
-  console.log(req.body.domain);
   parseString(xmlfile.data, function (err, result) {
     xmlusers = readxmlfile.readXmlFile(result, req.body.domain);
     res

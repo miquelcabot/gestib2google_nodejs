@@ -46,22 +46,27 @@ function getgroupemails(name, isstudent) {
 function readXmlGroups(xmlfile) {
     console.log("Loading XML groups...");
     var xmlgroups = {};
+    var xmltutors = [];
     
     for (i in xmlfile.CENTRE_EXPORT.CURSOS[0].CURS) {
         var curs = xmlfile.CENTRE_EXPORT.CURSOS[0].CURS[i].$;
         
         for (j in xmlfile.CENTRE_EXPORT.CURSOS[0].CURS[i].GRUP) {
             var grup = xmlfile.CENTRE_EXPORT.CURSOS[0].CURS[i].GRUP[j].$;
-            
+
             xmlgroups[grup.codi] = {
                 'emailsstudents': getgroupemails(curs.descripcio+" "+grup.nom, true),
                 'emailsteachers': getgroupemails(curs.descripcio+" "+grup.nom, false),
                 'name': curs.descripcio+" "+grup.nom
             }
+            xmltutors.push(grup.tutor);
         }
     }
     
-    return xmlgroups;
+    return {
+        xmlgroups: xmlgroups,
+        xmltutors: Array.from(new Set(xmltutors)) // Eliminam duplicats
+    }
 }
 
 function readXmlTimeTable(xmlfile, xmlgroups) {
@@ -143,9 +148,9 @@ function readXmlUsers(xmlfile, xmlgroups, xmltimetable, domain) {
 }
 
 function readXmlFile(xmlfile, domain) {
-    var xmlgroups = readXmlGroups(xmlfile);
-    var xmltimetable = readXmlTimeTable(xmlfile, xmlgroups);
-    var xmlusers = readXmlUsers(xmlfile, xmlgroups, xmltimetable, domain);
+    var groupstutors = readXmlGroups(xmlfile);
+    var xmltimetable = readXmlTimeTable(xmlfile, groupstutors.xmlgroups);
+    var xmlusers = readXmlUsers(xmlfile, groupstutors.xmlgroups, xmltimetable, domain);
 
     return xmlusers;
 }

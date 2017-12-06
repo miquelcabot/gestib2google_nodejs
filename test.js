@@ -22,5 +22,4 @@ console.log(a.groupswithprefixadded());
 content = fs.readFileSync('exportacioDadesCentre.xml');
 parseString(content, function (err, result) {
   xmlusers = readxmlfile.readXmlFile(result, "iesemilidarder.com");
-  console.log(xmlusers);
 });
