@@ -31,11 +31,12 @@ app.post('/importgestib', function(req, res) {
   var xmlfile = req.files.xmlfile;
 
   parseString(xmlfile.data, function (err, result) {
-    readxmlfile.readXmlFile(result);
+    xmlusers = readxmlfile.readXmlFile(result, "iesemilidarder.com");
+    res
+      .status(200)
+      .send(xmlusers);
   });
-  res
-    .status(200)
-    .send("OK");
+
 });
 
 // Add some routing

@@ -21,5 +21,6 @@ console.log(a.groupswithprefixadded());
 // Test read xml file
 content = fs.readFileSync('exportacioDadesCentre.xml');
 parseString(content, function (err, result) {
-  readxmlfile.readXmlFile(result, "iesemilidarder.com");
+  xmlusers = readxmlfile.readXmlFile(result, "iesemilidarder.com");
+  console.log(xmlusers);
 });
