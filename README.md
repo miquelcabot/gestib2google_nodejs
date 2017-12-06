@@ -1,6 +1,6 @@
 # gestib2googleweb
 
-Gestib to Google XML conversion
+GestIB to Google XML conversion
 
 ## Requirements
 Requirements: [Node.js](https://nodejs.org/).
