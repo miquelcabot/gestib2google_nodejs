@@ -60,6 +60,9 @@ function readXmlGroups(xmlfile) {
                 'name': curs.descripcio+" "+grup.nom
             }
             xmltutors.push(grup.tutor);
+            if (grup.tutor2) {
+                xmltutors.push(grup.tutor2);
+            }
         }
     }
     
