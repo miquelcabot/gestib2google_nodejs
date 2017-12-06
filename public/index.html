@@ -137,30 +137,30 @@
         <i class="fa fa-file"></i> Importar fitxer XML de GestIB</div>
       <div class="card-body">
         <form action="importgestib" method="POST" enctype="multipart/form-data">
-          <div class="form-group row">
-            <label for="xmlfile" class="col-sm-6 col-md-4 col-form-label">Fitxer XML de GestIB</label>
-            <input class="form-contro col-sm-6 col-md-8" id="xmlfile" name="xmlfile" type="file" placeholder="File">
+          <div class="form-group">
+            <label for="xmlfile">Fitxer XML de GestIB</label>
+            <input class="form-control" id="xmlfile" name="xmlfile" type="file" placeholder="File">
           </div>
-          <div class="form-group row">
-            <label for="domain" class="col-sm-6 col-md-4 col-form-label">Domini</label>
-            <input class="form-contro col-sm-6 col-md-8" id="domain" name="domain" type="text" placeholder="Domini" value="iesemilidarder.com">
+          <div class="form-group">
+            <label for="domain">Domini</label>
+            <input class="form-control" id="domain" name="domain" type="text" placeholder="Domini" value="iesemilidarder.com">
           </div>
-          <div class="form-group row">
-            <label for="tutorsgroup" class="col-sm-6 col-md-4 col-form-label">Nom del grup de tutors</label>
-            <input class="form-contro col-sm-6 col-md-8" id="tutorsgroup" name="tutorsgroup" type="text" placeholder="Grup tutors" value="tutors">
+          <div class="form-group">
+            <label for="tutorsgroup">Nom del grup de tutors</label>
+            <input class="form-control" id="tutorsgroup" name="tutorsgroup" type="text" placeholder="Grup tutors" value="tutors">
           </div>
-          <div class="form-group row">
-            <label for="teachersgroup" class="col-sm-6 col-md-4 col-form-label">Prefix dels grups de professors</label>
-            <input class="form-contro col-sm-6 col-md-8" id="teachersgroup" name="teachersgroup" type="text" placeholder="Prefix" value="ee.">
+          <div class="form-group">
+            <label for="teachersgroup">Prefix dels grups de professors</label>
+            <input class="form-control" id="teachersgroup" name="teachersgroup" type="text" placeholder="Prefix" value="ee.">
           </div>
-          <div class="form-group row">
-            <label for="studentsgroup" class="col-sm-6 col-md-4 col-form-label">Prefix dels grups d'alumnes</label>
-            <input class="form-contro col-sm-6 col-md-8" id="studentsgroup" name="studentsgroup" type="text" placeholder="Prefix" value="alumnat.">
+          <div class="form-group">
+            <label for="studentsgroup">Prefix dels grups d'alumnes</label>
+            <input class="form-control" id="studentsgroup" name="studentsgroup" type="text" placeholder="Prefix" value="alumnat.">
           </div>
-          <div class="form-group row">
+          <div class="form-group">
             <div class="form-check">
-              <label class="form-check-label" class="col-sm-6 col-md-4 col-form-label">
-                <input class="form-check-inpu col-sm-8" type="checkbox"> Remember Password</label>
+              <label class="form-check-label"> 
+                <input class="form-check-input" type="checkbox"> Remember Password</label>
             </div>
           </div>
           <input type="submit" value="Importar">

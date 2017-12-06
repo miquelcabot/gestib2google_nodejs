@@ -2,7 +2,8 @@ var express = require('express');
 var path = require('path');
 var fileUpload = require('express-fileupload');
 var parseString = require('xml2js').parseString;
-var readxmlfile = require('./readxmlfile.js');
+
+var readxmlfile = require('./api/readxmlfile.js');
 
 var app = express();
 app.use(fileUpload());
