@@ -2,7 +2,6 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
-var domaingroup = require("./domaingroup");
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/admin-directory_v1-nodejs.json
@@ -130,7 +129,7 @@ function listUsers() {
 
 function getDomainGroups(service, auth, domain) {
   console.log('Loading domain groups...');
-  var domainGroups = {};
+  var domaingroups = {};
   
   service.groups.list({
     auth: auth,
@@ -164,23 +163,20 @@ function getDomainGroups(service, auth, domain) {
             var member = members[j];
             membersgroup.push(member.email);
           }
-          domainGroups[groupName] = new domaingroup.DomainGroup(
-            groupName,
-            membersgroup
-            );
+          domaingroups[groupName] = membersgroup;
         }
       });
     }
   });
-  return domainGroups;
+  return domaingroups;
 }
 
 function getDomainUsers(domain) {
   var service = google.admin('directory_v1');
   var auth = authorize();
   
-  var domainGroups = getDomainGroups(service, auth, domain);
-  var domainUsers = {};
+  var domaingroups = getDomainGroups(service, auth, domain);
+  var domainusers = {};
   
   console.log('Loading domain users...');
 
@@ -195,16 +191,13 @@ function getDomainUsers(domain) {
       return;
     }
     var users = response.users;
-    if (users.length == 0) {
-      console.log('No users in the domain.');
-    } else {
-      console.log('Users:');
-      for (var i = 0; i < users.length; i++) {
-        var user = users[i];
-        console.log('%s (%s)', user.primaryEmail, user.name.fullName);
-      }
+    for (var i = 0; i < users.length; i++) {
+      var user = users[i];
+      console.log('%s (%s)', user.primaryEmail, user.name.fullName);
     }
   });
+
+  return domainusers;
 }
 
 module.exports = {

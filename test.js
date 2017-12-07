@@ -15,13 +15,12 @@ console.log(a.user());
 console.log(a.groupswithprefix());
 console.log(a.groupswithprefixadded());
 
-
-
-googleconnect.getDomainUsers("iesemilidarder.com");
-
 // Test read xml file
 content = fs.readFileSync('exportacioDadesCentre.xml');
 parseString(content, function (err, result) {
   xmlusers = readxmlfile.readXmlFile(result, "iesemilidarder.com");
   console.log(xmlusers);
 });
+
+domainuser = googleconnect.getDomainUsers("iesemilidarder.com");
+console.log(domainuser);
