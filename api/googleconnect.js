@@ -151,18 +151,22 @@ function getDomainGroups(service, auth, domain, callback) {
 
     var groups = response.groups;
     var membersok = 0;
-    for (var i = 0; i < groups.length-10; i++) {
+    for (var i = 0; i < groups.length; i++) {
       // We read the members of this group
       var group = groups[i];
 
-      // We read the members of this group
-      getDomainMembers(service, auth, domain, domaingroups, group, function() {
+      // Carregam nomes grups de alumnat, equip educatiu i tutors
+      if (group.email.startsWith("alumnat.") || group.email.startsWith("ee.") || group.email.startsWith("tutors")) {
+        // We read the members of this group
+        getDomainMembers(service, auth, domain, domaingroups, group, function() {
+          membersok++;
+          if (membersok>=groups.length) {
+            callback(domaingroups);
+          }
+        });
+      } else {
         membersok++;
-        console.log(membersok+" of "+groups.length+" groups loaded");
-        if (membersok>=groups.length-10) {
-          callback(domaingroups);
-        }
-      });
+      }
     }
   });
 }

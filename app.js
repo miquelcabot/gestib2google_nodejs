@@ -4,6 +4,7 @@ var fileUpload = require('express-fileupload');
 var parseString = require('xml2js').parseString;
 
 var readxmlfile = require('./api/readxmlfile.js');
+var googleconnect = require('./api/googleconnect.js');
 
 var app = express();
 app.use(fileUpload());
@@ -33,9 +34,25 @@ app.post('/importgestib', function(req, res) {
 
   parseString(xmlfile.data, function (err, result) {
     xmlusers = readxmlfile.readXmlFile(result, req.body.domain);
-    res
-      .status(200)
-      .send(xmlusers);
+    xmlusersstr = "";
+    domainuserstr = "";
+
+    for (user in xmlusers) {
+      xmlusersstr = xmlusersstr + xmlusers[user].toString()+"<br>";
+    }
+
+    googleconnect.getDomainInformation(req.body.domain, function(domainusers) {
+      for (user in domainusers) {
+        domainuserstr = domainuserstr + domainusers[user].toString()+"<br>";
+      }
+
+      res
+        .status(200)
+        //.send(xmlusers);
+        .send("<h1>XML</h1>"+ xmlusersstr + "<h1>Domini</h1>"+ domainuserstr);
+    });
+    
+
   });
 
 });
