@@ -31,7 +31,7 @@ function normalizedname(name) {
 }
 
 function DomainUser(domain, id, name, surname, surname1, surname2, domainemail, 
-    suspended, teacher, tutor, groups) {
+    suspended, teacher, tutor, withoutcode, groups) {
   this.domain = domain;
   this.id = id;
   this.name = name;
@@ -42,6 +42,7 @@ function DomainUser(domain, id, name, surname, surname1, surname2, domainemail,
   this.suspended = suspended;
   this.teacher = teacher;
   this.tutor = tutor;
+  this.withoutcode = withoutcode;
   this.groups = groups;
 
   this.email = function() {

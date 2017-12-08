@@ -122,6 +122,7 @@ function readXmlUsers(xmlfile, xmlgroups, xmltutors, xmltimetable, domain) {
             false,          // suspended
             false,          // teacher 
             false,          // tutor
+            false,          // withoutcode
             emailsstudent   // groups
         );
     }
@@ -146,6 +147,7 @@ function readXmlUsers(xmlfile, xmlgroups, xmltutors, xmltimetable, domain) {
             false,          // suspended
             true,           // teacher 
             xmltutors.includes(teacher.codi),  // tutor
+            false,          // withoutcode
             emailsteacher   // groups
         );
     }

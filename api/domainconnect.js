@@ -211,10 +211,13 @@ function getDomainUsers(auth, domain, callback) {
         var user = users[i];
         
         var id;
-        if (user.externalIds) {
+        var withoutcode = false;
+        if (user.externalIds && user.externalIds[0].value) {
           id = user.externalIds[0].value;
         } else {
+          userWithoutCode++;
           id = "WITHOUTCODE"+userWithoutCode;
+          withoutcode = true;
         }
                
         var member = [];                // Afegim tots els grups del que és membre
@@ -227,7 +230,7 @@ function getDomainUsers(auth, domain, callback) {
         }
         var istutor = (member.indexOf("tutors")>=0);  // Comprovam si és tutor
   
-        domainusers[i] = new domainuser.DomainUser(
+        domainusers[id] = new domainuser.DomainUser(
           domain, 
           id,
           user.name.givenName, 
@@ -238,6 +241,7 @@ function getDomainUsers(auth, domain, callback) {
           user.suspended,     // suspended
           user.orgUnitPath.toLowerCase().indexOf("professor")>=0,  // teacher 
           istutor,            // tutor
+          withoutcode,        // withoutcode
           member              // groups
         );
       }
