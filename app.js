@@ -3,8 +3,8 @@ var path = require('path');
 var fileUpload = require('express-fileupload');
 var parseString = require('xml2js').parseString;
 
-var readxmlfile = require('./api/readxmlfile.js');
-var googleconnect = require('./api/googleconnect.js');
+var xmlfile = require('./api/xmlfile.js');
+var domainconnect = require('./api/domainconnect.js');
 
 var app = express();
 app.use(fileUpload());
@@ -29,11 +29,9 @@ app.post('/importgestib', function(req, res) {
   console.log("Received the XML file to import");
   if (!req.files.xmlfile)
     return res.status(400).send('No files were uploaded.');
-  
-  var xmlfile = req.files.xmlfile;
 
-  parseString(xmlfile.data, function (err, result) {
-    xmlusers = readxmlfile.readXmlFile(result, req.body.domain);
+  parseString(req.files.xmlfile.data, function (err, result) {
+    xmlusers = xmlfile.readXmlFile(result, req.body.domain);
     xmlusersstr = "";
     domainuserstr = "";
 
@@ -41,20 +39,17 @@ app.post('/importgestib', function(req, res) {
       xmlusersstr = xmlusersstr + xmlusers[user].toString()+"<br>";
     }
 
-   /* googleconnect.getDomainInformation(req.body.domain, function(domainusers) {
+    domainconnect.getDomainInformation(req.body.domain, function(domainusers) {
       for (user in domainusers) {
         domainuserstr = domainuserstr + domainusers[user].toString()+"<br>";
-      }*/
+      }
 
       res
         .status(200)
-        //.send(xmlusers);
         .send("<h1>XML</h1>"+ xmlusersstr + "<h1>Domini</h1>"+ domainuserstr);
-  //  });
-    
+    });
 
   });
-
 });
 
 // Add some routing

@@ -2,8 +2,8 @@ var fs = require('fs');
 var parseString = require('xml2js').parseString;
 
 var domainuser = require("./api/domainuser");
-var googleconnect = require("./api/googleconnect");
-var readxmlfile = require('./api/readxmlfile.js');
+var domainconnect = require("./api/domainconnect");
+var xmlfile = require('./api/xmlfile.js');
 
 var a = new domainuser.DomainUser("iesemilidarder.com", 1, "Pep", 
     "Guardiola Sanç", "Guardiola", "Sanç", "", false, true, true, ["eso1","eso2"]);
@@ -17,10 +17,10 @@ console.log(a.groupswithprefixadded());
 
 
 // Test read user domains
-googleconnect.getDomainInformation("iesemilidarder.com", function(domainusers) {
+domainconnect.getDomainInformation("iesemilidarder.com", function(domainusers) {
   // Test read xml file
   content = fs.readFileSync('exportacioDadesCentre.xml');
   parseString(content, function (err, result) {
-    xmlusers = readxmlfile.readXmlFile(result, "iesemilidarder.com");
+    xmlusers = xmlfile.readXmlFile(result, "iesemilidarder.com");
   });
 });
