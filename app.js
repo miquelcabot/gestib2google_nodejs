@@ -41,16 +41,16 @@ app.post('/importgestib', function(req, res) {
       xmlusersstr = xmlusersstr + xmlusers[user].toString()+"<br>";
     }
 
-    googleconnect.getDomainInformation(req.body.domain, function(domainusers) {
+   /* googleconnect.getDomainInformation(req.body.domain, function(domainusers) {
       for (user in domainusers) {
         domainuserstr = domainuserstr + domainusers[user].toString()+"<br>";
-      }
+      }*/
 
       res
         .status(200)
         //.send(xmlusers);
         .send("<h1>XML</h1>"+ xmlusersstr + "<h1>Domini</h1>"+ domainuserstr);
-    });
+  //  });
     
 
   });
