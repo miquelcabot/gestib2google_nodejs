@@ -109,7 +109,7 @@ function storeToken(token) {
 
 function getDomainMembers(service, auth, domain, domaingroups, group, callback) {
   var groupname = group.email.replace("@"+domain, "");
-  console.log('Loading members of "'+groupname+'" group...')
+  console.log('Loading domain members of "'+groupname+'" group...')
   var membersgroup = [];
 
   service.members.list({
@@ -217,15 +217,15 @@ function getDomainUsers(auth, domain, callback) {
           id = "WITHOUTCODE"+userWithoutCode;
         }
                
-        var istutor = ("tutors" in domaingroups);  // Comprovam si és tutor
         var member = [];                // Afegim tots els grups del que és membre
-        for (groupname in domaingroups) {         
+        for (groupname in domaingroups) {
           for (var j = 0; j<domaingroups[groupname].length; j++) {
             if (user.primaryEmail==domaingroups[groupname][j]) {
               member.push(groupname);
             }
           }
         }
+        var istutor = (member.indexOf("tutors")>=0);  // Comprovam si és tutor
   
         domainusers[i] = new domainuser.DomainUser(
           domain, 
@@ -237,7 +237,7 @@ function getDomainUsers(auth, domain, callback) {
           user.primaryEmail,  // domainemail
           user.suspended,     // suspended
           user.orgUnitPath.toLowerCase().indexOf("professor")>=0,  // teacher 
-          istutor,            // tutor  TODO: comprovar si és tutor
+          istutor,            // tutor
           member              // groups
         );
       }
