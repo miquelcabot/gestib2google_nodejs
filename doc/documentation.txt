@@ -10,3 +10,9 @@ https://github.com/google/google-api-nodejs-client
 
 NextPageToken
 https://firebase.google.com/docs/auth/admin/manage-users
+
+Asynchronous Iteration Patterns In Node.js
+http://metaduck.com/01-asynchronous-iteration-patterns.html
+
+Error: Request rate higher than configured??
+https://developers.google.com/admin-sdk/directory/v1/limits#backoff

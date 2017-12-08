@@ -2,6 +2,7 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+var domainuser = require('./domainuser');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/admin-directory_v1-nodejs.json
@@ -14,49 +15,50 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
 var TOKEN_PATH = TOKEN_DIR + 'admin-directory_v1-nodejs.json';
 
 /**
- * Get the authorization client credentials.
+ * Create an OAuth2 client with the given credentials, and then execute the
+ * given callback function.
+ *
+ * @param {String} domain The name of the Google domain.
+ * @param {function} callback The callback to call with the authorized client.
  */
-function getCredentials() {
+function getDomainInformation(domain, callback) {
   // Load client secrets from a local file.
-  try {
-    content = fs.readFileSync('client_secret.json');
-    return JSON.parse(content);
-  } catch(err) {
-    console.log('Error loading client secret file: ' + err);
-    throw err;
-  }
+  fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+    if (err) {
+      console.log('Error loading client secret file: ' + err);
+      return;
+    }
+    // Authorize a client with the loaded credentials, then call the
+    // Directory API.
+    var credentials = JSON.parse(content);
+    var clientSecret = credentials.installed.client_secret;
+    var clientId = credentials.installed.client_id;
+    var redirectUrl = credentials.installed.redirect_uris[0];
+    var auth = new googleAuth();
+    var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+  
+    // Check if we have previously stored a token.
+    fs.readFile(TOKEN_PATH, function(err, token) {
+      if (err) {
+        getNewToken(oauth2Client, domain, callback);
+      } else {
+        oauth2Client.credentials = JSON.parse(token);
+        getDomainUsers(oauth2Client, domain, callback);
+      }
+    });
+  });
 }
 
 /**
- * Create an OAuth2 client with the given credentials
- */
-function authorize() {
-  var credentials = getCredentials();
-
-  var clientSecret = credentials.installed.client_secret;
-  var clientId = credentials.installed.client_id;
-  var redirectUrl = credentials.installed.redirect_uris[0];
-
-  var auth = new googleAuth();
-  var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-
-  // Check if we have previously stored a token.
-  try {
-    token = fs.readFileSync(TOKEN_PATH);
-    oauth2Client.credentials = JSON.parse(token);
-    return oauth2Client;
-  } catch (err) {
-    newoauth2Client = getNewToken(oauth2Client);
-    return newoauth2Client;
-  }
-}
-
-/**
- * Get and store new token after prompting for user authorization
+ * Get and store new token after prompting for user authorization, and then
+ * execute the given callback with the authorized OAuth2 client.
  *
  * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
+ * @param {getEventsCallback} callback The callback to call with the authorized.
+ * @param {String} domain The name of the Google domain.
+ *     client.
  */
-function getNewToken(oauth2Client) {
+function getNewToken(oauth2Client, domain, callback) {
   var authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES
@@ -75,7 +77,7 @@ function getNewToken(oauth2Client) {
       }
       oauth2Client.credentials = token;
       storeToken(token);
-      return oauth2Client;
+      getDomainUsers(oauth2Client, domain, callback);
     });
   });
 }
@@ -97,40 +99,38 @@ function storeToken(token) {
   console.log('Token stored to ' + TOKEN_PATH);
 }
 
-/**
- * Lists the first 10 users in the domain.
- */
-function listUsers() {
-  var service = google.admin('directory_v1');
-  var auth = authorize();
+function getDomainMembers(service, auth, domain, domaingroups, group, callback) {
+  var groupname = group.email.replace("@"+domain, "");
+  console.log('Loading members of "'+groupname+'" group...')
+  var membersgroup = [];
 
-  service.users.list({
+  service.members.list({
     auth: auth,
-    customer: 'my_customer',
-    maxResults: 10,
-    orderBy: 'email'
+    groupKey: group.id,
+    maxResults: 100000
   }, function(err, response) {
     if (err) {
       console.log('The API returned an error: ' + err);
       return;
     }
-    var users = response.users;
-    if (users.length == 0) {
-      console.log('No users in the domain.');
-    } else {
-      console.log('Users:');
-      for (var i = 0; i < users.length; i++) {
-        var user = users[i];
-        console.log('%s (%s)', user.primaryEmail, user.name.fullName);
+
+    if (response.members) {
+      var members = response.members;
+      for (var i = 0; i < members.length; i++) {
+        var member = members[i];
+        membersgroup.push(member.email);
       }
     }
+
+    domaingroups[groupname] = membersgroup;
+    callback();
   });
 }
 
-function getDomainGroups(service, auth, domain) {
+function getDomainGroups(service, auth, domain, callback) {
   console.log('Loading domain groups...');
   var domaingroups = {};
-  
+
   service.groups.list({
     auth: auth,
     customer: 'my_customer',
@@ -140,66 +140,87 @@ function getDomainGroups(service, auth, domain) {
       console.log('The API returned an error: ' + err);
       return;
     }
+
     var groups = response.groups;
-    for (var i = 0; i < groups.length; i++) {
+    var membersok = 0;
+    for (var i = 0; i < groups.length-10; i++) {
       // We read the members of this group
       var group = groups[i];
-      var groupName = group.email.replace("@"+domain, "");
-      console.log('Loading members of "'+groupName+'" group...')
 
-      service.members.list({
-        auth: auth,
-        groupKey: group.id,
-        maxResults: 100000
-      }, function(err, response) {
-        if (err) {
-          console.log('The API returned an error: ' + err);
-          return;
-        }
-        var membersgroup = [];
-        if (response.members) {
-          var members = response.members;
-          for (var j = 0; j < members.length; j++) {
-            var member = members[j];
-            membersgroup.push(member.email);
-          }
-          domaingroups[groupName] = membersgroup;
+      // We read the members of this group
+      getDomainMembers(service, auth, domain, domaingroups, group, function() {
+        membersok++;
+        console.log(membersok+" of "+groups.length+" groups loaded");
+        if (membersok>=groups.length-10) {
+          callback(domaingroups);
         }
       });
     }
   });
-  return domaingroups;
 }
 
-function getDomainUsers(domain) {
+function getDomainUsers(auth, domain, callback) {
   var service = google.admin('directory_v1');
-  var auth = authorize();
   
-  var domaingroups = getDomainGroups(service, auth, domain);
   var domainusers = {};
+
+  getDomainGroups(service, auth, domain, function(domaingroups) {
+    console.log('Loading domain users...');
+
+    service.users.list({
+      auth: auth,
+      customer: 'my_customer',
+      maxResults: 500,
+      orderBy: 'email'
+    }, function(err, response) {
+      if (err) {
+        console.log('The API returned an error: ' + err);
+        return;
+      }
   
-  console.log('Loading domain users...');
-
-  service.users.list({
-    auth: auth,
-    customer: 'my_customer',
-    maxResults: 5,
-    orderBy: 'email'
-  }, function(err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
-    }
-    var users = response.users;
-    for (var i = 0; i < users.length; i++) {
-      var user = users[i];
-      console.log('%s (%s)', user.primaryEmail, user.name.fullName);
-    }
+      var userWithoutCode = 0;
+      var users = response.users;
+      for (var i = 0; i < users.length; i++) {
+        var user = users[i];
+  
+        var id;
+        if (user.externalIds) {
+          id = user.externalIds[0].value;
+        } else {
+          id = "WITHOUTCODE"+userWithoutCode;
+        }
+               
+        var istutor = ("tutors" in domaingroups);  // Comprovam si és tutor
+        var member = [];                // Afegim tots els grups del que és membre
+        for (groupname in domaingroups) {         
+          for (var j = 0; j<domaingroups[groupname].length; j++) {
+            if (user.primaryEmail==domaingroups[groupname][j]) {
+              member.push(groupname);
+            }
+          }
+        }
+  
+        domainusers[i] = new domainuser.DomainUser(
+          domain, 
+          id,
+          user.name.givenName, 
+          user.name.familyName,
+          null,               // surname 1
+          null,               // surname 2
+          user.primaryEmail,  // domainemail
+          user.suspended,     // suspended
+          user.orgUnitPath.toLowerCase().indexOf("professor")>=0,  // teacher 
+          istutor,            // tutor  TODO: comprovar si és tutor
+          member              // groups
+        );
+      }
+      // Retornam domainusers
+      callback(domainusers);
+    });
   });
-
-  return domainusers;
+ 
 }
 
 module.exports = {
-  getDomainUsers: getDomainUsers
+  getDomainInformation: getDomainInformation
 }
