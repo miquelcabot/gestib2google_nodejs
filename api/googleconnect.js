@@ -171,6 +171,31 @@ function getDomainGroups(service, auth, domain, callback) {
   });
 }
 
+function getAllDomainUsers(auth, service, users, nextPageToken, callback) {
+  if (!users) {
+    users = [];
+  }
+
+  service.users.list({
+    auth: auth,
+    customer: 'my_customer',
+    maxResults: 500,
+    pageToken: nextPageToken,
+    orderBy: 'email'
+  }, function(err, response) {
+    if (err) {
+      console.log('The API returned an error: ' + err);
+      return;
+    }
+    users = users.concat(response.users);
+    if (response.nextPageToken) {
+      getAllDomainUsers(auth, service, users, response.nextPageToken, callback);
+    } else {
+      callback(users);
+    }
+  });
+}
+  
 function getDomainUsers(auth, domain, callback) {
   var service = google.admin('directory_v1');
   
@@ -178,23 +203,13 @@ function getDomainUsers(auth, domain, callback) {
 
   getDomainGroups(service, auth, domain, function(domaingroups) {
     console.log('Loading domain users...');
-
-    service.users.list({
-      auth: auth,
-      customer: 'my_customer',
-      maxResults: 500,
-      orderBy: 'email'
-    }, function(err, response) {
-      if (err) {
-        console.log('The API returned an error: ' + err);
-        return;
-      }
   
+    getAllDomainUsers(auth, service, null, null, function(users) {  
+     
       var userWithoutCode = 0;
-      var users = response.users;
       for (var i = 0; i < users.length; i++) {
         var user = users[i];
-  
+        
         var id;
         if (user.externalIds) {
           id = user.externalIds[0].value;

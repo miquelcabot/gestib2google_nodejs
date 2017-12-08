@@ -16,11 +16,11 @@ console.log(a.groupswithprefix());
 console.log(a.groupswithprefixadded());
 
 // Test read xml file
-content = fs.readFileSync('exportacioDadesCentre.xml');
+/*content = fs.readFileSync('exportacioDadesCentre.xml');
 parseString(content, function (err, result) {
   xmlusers = readxmlfile.readXmlFile(result, "iesemilidarder.com");
   console.log(xmlusers);
-});
+});*/
 
 googleconnect.getDomainInformation("iesemilidarder.com", function(domainusers) {
   for (user in domainusers) {
