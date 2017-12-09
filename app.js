@@ -1,3 +1,7 @@
+#!/usr/bin/env node
+
+/** app.js  */
+
 var express = require('express');
 var path = require('path');
 var fileUpload = require('express-fileupload');

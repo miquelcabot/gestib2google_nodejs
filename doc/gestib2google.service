@@ -1,0 +1,14 @@
+[Unit]
+Description=Gestib to Google Node Http Server
+
+[Service]
+PIDFile=/tmp/gestib2google-99.pid
+User=root
+Group=root
+Restart=always
+KillSignal=SIGQUIT
+WorkingDirectory=/home/ubuntu/gestib2googleweb
+ExecStart=/home/ubuntu/gestib2googleweb/app.js
+
+[Install]
+WantedBy=multi-user.target

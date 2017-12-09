@@ -16,3 +16,6 @@ http://metaduck.com/01-asynchronous-iteration-patterns.html
 
 Error: Request rate higher than configured??
 https://developers.google.com/admin-sdk/directory/v1/limits#backoff
+
+Making Node.js service always alive on Ubuntu Server
+https://hackernoon.com/making-node-js-service-always-alive-on-ubuntu-server-e20c9c0808e4
