@@ -50,11 +50,32 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
         if (!(user in domainusers)) {  // It doesn't exists in domain
             // Email pot ser repetit, comprovar-ho!!
 
-
+/*
+            if not value.teacher:
+                n = 0
+                emailrepeated = True
+                while emailrepeated:
+                    for dkey, dvalue in domainusers.items():
+                        if (dvalue.email[0:3] == value.email[0:3]):
+                            if (dvalue.email[3:5].isdigit()):
+                                if int(dvalue.email[3:5]) >= int(value.email[3:5]):
+                                    n = int(dvalue.email[3:5])+1
+                                    value.email = value.email[:3]+'{:02d}'.format(n)+GOOGLE_DOMAIN
+                        else:
+                            emailrepeated = False
+*/
 
             // Afegim l'usuari que cream al diccionari de usuaris del domini
 
-
+/*
+            domainusers[value.id] = User(id        = value.id,
+                                         name      = "",
+                                         surname   = "",
+                                         email     = value.email,
+                                         suspended = False,
+                                         teacher   = value.teacher
+                                        )
+*/
 
 
             console.log("CREATE --> "+xmluser.toString());
@@ -63,8 +84,29 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
                 // Create domain user
                 // https://developers.google.com/admin-sdk/reseller/v1/codelab/end-to-end
 
+/*
+                try:
+                    service.users().insert(
+                        body={ 'primaryEmail': value.email, 
+                               'name': { 'givenName': value.name, 'familyName': value.surname }, 
+                               'orgUnitPath': '/Professorat' if value.teacher else '/Alumnat',
+                               'externalIds': [{ 'type': 'organization', 'value': value.id }], 
+                               'suspended': False,
+                               'changePasswordAtNextLogin': True,
+                               'password': DEFAULT_PASSWORD}
+                        ).execute()
 
-
+                    # Insert all "ee." or "alumnat." groups
+                    for gr in value.setprefixtogroups:
+                        # https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
+                        service.members().insert(
+                                groupKey = gr+GOOGLE_DOMAIN,
+                                body = {'email': value.email}
+                            ).execute()
+                    # TODO Insert "tutors" group
+                except:
+                    print("Error creating user")
+*/
             }
         } else {
             var domainuser = domainusers[user];
@@ -98,9 +140,20 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
                 contg++;
                 if (apply) {
                     // Actualitzam els grups de l'usuari
-    
-    
-    
+    /*
+                for gr in creategroups:
+                    # https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
+                    service.members().insert(
+                            groupKey = gr+GOOGLE_DOMAIN,
+                            body = {'email': domainuser.email}
+                        ).execute()
+                for gr in deletegroups:
+                    # https://developers.google.com/admin-sdk/directory/v1/reference/members/delete
+                    service.members().delete(
+                            groupKey = gr+GOOGLE_DOMAIN,
+                            memberKey = domainuser.email
+                        ).execute()
+    */
                 }
             }
         }
