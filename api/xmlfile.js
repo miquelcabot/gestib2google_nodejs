@@ -23,7 +23,7 @@ function getgroupemails(name, isstudent) {
         if (grup=="a") {
             email.push("smx1");
         } else if (grup=="b") {
-            email.push("sxm2");
+            email.push("smx2");
         } else if ((grup=="c") && isstudent) {
             // Si és estudiant, feim que grup C de SMX sigui de 1r i 2n
             email.push("smx1");

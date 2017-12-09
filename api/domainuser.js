@@ -64,6 +64,15 @@ function DomainUser(domain, id, name, surname, surname1, surname2, domainemail,
     return this.email().replace("@"+this.domain, "");
   }
 
+  this.groupswithdomain = function() {
+    var gr = [];
+    for (var i = 0; i < this.groups.length; i++) {
+      group = this.groups[i];
+      gr.push(group+"@"+this.domain);
+    }
+    return gr;
+  }
+
   this.groupswithprefix = function() {
     var gr = [];
     for (var i = 0; i < this.groups.length; i++) {
