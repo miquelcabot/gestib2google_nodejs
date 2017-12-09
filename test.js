@@ -23,11 +23,11 @@ domainread.readDomainUsers("iesemilidarder.com", function(domainusers) {
     parseString(content, function (err, result) {
         xmlusers = xmlfile.readXmlFile(result, "iesemilidarder.com");
 
-        var d = domainoperations.deleteDomainUsers(xmlusers, domainusers, false);
-        console.log(d + " users will be suspended");
-        var counters = domainoperations.addDomainUsers(xmlusers, domainusers, false);
-        console.log(counters.created + " users will be created");
-        console.log(counters.activated + " users will be activated");
-        console.log(counters.groupsmodified + " users will change their group membership");
+        domainoperations.applyDomainChanges(xmlusers, domainusers, false, function(counters) {
+            console.log(counters.deleted + " users will be suspended");
+            console.log(counters.created + " users will be created");
+            console.log(counters.activated + " users will be activated");
+            console.log(counters.groupsmodified + " users will change their group membership");
+        });
     });
 });

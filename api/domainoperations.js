@@ -1,4 +1,6 @@
-function deleteDomainUsers(xmlusers, domainusers, apply) {
+var domainauth = require('./domainauth');
+
+function deleteDomainUsers(service, auth, xmlusers, domainusers, apply) {
     var cont = 0;
     console.log("Deleting domain users...")
     for (user in domainusers) {     // For every domain user
@@ -16,7 +18,7 @@ function deleteDomainUsers(xmlusers, domainusers, apply) {
     return cont;
 }
 
-function addDomainUsers(xmlusers, domainusers, apply) {
+function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
     var contc = 0;
     var conta = 0;
     var contg = 0;
@@ -45,12 +47,19 @@ function addDomainUsers(xmlusers, domainusers, apply) {
     }
 }
 
-function showDomainUsers() {
-    
+function applyDomainChanges(xmlusers, domainusers, apply, callback) {
+    domainauth.getDomainAuthorization(function(service, auth) {
+        var contd = deleteDomainUsers(service, auth, xmlusers, domainusers, apply);
+        var cont = addDomainUsers(service, auth, xmlusers, domainusers, apply);
+        callback({
+            deleted: contd, 
+            created: cont.created, 
+            activated: cont.activated, 
+            groupsmodified: cont.groupsmodified
+        });
+    });
 }
 
 module.exports = {
-    deleteDomainUsers: deleteDomainUsers,
-    addDomainUsers: addDomainUsers,
-    showDomainUsers: showDomainUsers
+    applyDomainChanges: applyDomainChanges
 }
