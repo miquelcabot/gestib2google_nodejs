@@ -2,7 +2,7 @@ var fs = require('fs');
 var parseString = require('xml2js').parseString;
 
 var domainuser = require("./api/domainuser");
-var domainconnect = require("./api/domainconnect");
+var domainread = require("./api/domainread");
 var domainoperations = require("./api/domainoperations");
 var xmlfile = require('./api/xmlfile.js');
 
@@ -16,9 +16,8 @@ console.log(a.user());
 console.log(a.groupswithprefix());
 console.log(a.groupswithprefixadded());
 
-
 // Test read user domains
-domainconnect.getDomainInformation("iesemilidarder.com", function(domainusers) {
+domainread.readDomainUsers("iesemilidarder.com", function(domainusers) {
     // Test read xml file
     content = fs.readFileSync('exportacioDadesCentre.xml');
     parseString(content, function (err, result) {

@@ -4,7 +4,7 @@ var fileUpload = require('express-fileupload');
 var parseString = require('xml2js').parseString;
 
 var xmlfile = require('./api/xmlfile.js');
-var domainconnect = require('./api/domainconnect.js');
+var domainread = require('./api/domainread.js');
 
 var app = express();
 app.use(fileUpload());
@@ -39,7 +39,7 @@ app.post('/importgestib', function(req, res) {
       xmlusersstr = xmlusersstr + xmlusers[user].toString()+"<br>";
     }
 
-    domainconnect.getDomainInformation(req.body.domain, function(domainusers) {
+    domainread.readDomainUsers(req.body.domain, function(domainusers) {
       for (user in domainusers) {
         domainuserstr = domainuserstr + domainusers[user].toString()+"<br>";
       }
