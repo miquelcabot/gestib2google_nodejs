@@ -84,18 +84,24 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
             if (apply) {
                 // Create domain user
                 // https://developers.google.com/admin-sdk/reseller/v1/codelab/end-to-end
-
+                service.users.insert({
+                    primaryEmail: xmluser.email(), 
+                    body = { 
+                        primaryEmail: xmluser.email(), 
+                        name: { givenName: xmluser.name, familyName: xmluser.surname }, 
+                        orgUnitPath: (xmluser.teacher?'/Professorat':'/Alumnat'),
+                        externalIds: [{ type: 'organization', value: xmluser.id }], 
+                        suspended: false,
+                        changePasswordAtNextLogin: true,
+                        password: "12345678"}   //Default password
+                }, function(err, response) {
+                    if (err) {
+                        console.log('The API returned an error: ' + err);
+                        return;
+                    }
+                });
 /*
-                try:
-                    service.users().insert(
-                        body={ 'primaryEmail': value.email, 
-                               'name': { 'givenName': value.name, 'familyName': value.surname }, 
-                               'orgUnitPath': '/Professorat' if value.teacher else '/Alumnat',
-                               'externalIds': [{ 'type': 'organization', 'value': value.id }], 
-                               'suspended': False,
-                               'changePasswordAtNextLogin': True,
-                               'password': DEFAULT_PASSWORD}
-                        ).execute()
+                
 
                     # Insert all "ee." or "alumnat." groups
                     for gr in value.setprefixtogroups:
