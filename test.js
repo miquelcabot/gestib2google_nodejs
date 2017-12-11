@@ -23,7 +23,7 @@ domainread.readDomainUsers("iesemilidarder.com", function(domainusers) {
     parseString(content, function (err, result) {
         xmlusers = xmlfile.readXmlFile(result, "iesemilidarder.com");
 
-        domainoperations.applyDomainChanges(xmlusers, domainusers, false, function(counters) {
+        domainoperations.applyDomainChanges(xmlusers, domainusers, "iesemilidarder.com", false, function(counters) {
             console.log(counters.deleted + " users will be suspended");
             console.log(counters.created + " users will be created");
             console.log(counters.activated + " users will be activated");

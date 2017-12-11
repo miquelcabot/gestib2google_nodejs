@@ -1,18 +1,19 @@
 var domainauth = require('./domainauth');
+var domainuser = require("./domainuser");
 
 function deleteDomainUsers(service, auth, xmlusers, domainusers, apply) {
     var cont = 0;
     console.log("Deleting domain users...")
     for (user in domainusers) {     // For every domain user
-        var domainuser = domainusers[user];
-        if (!domainuser.suspended && !domainuser.withoutcode) {
+        var domain_user = domainusers[user];
+        if (!domain_user.suspended && !domain_user.withoutcode) {
             if (!(user in xmlusers)) {  // It doesn't exists in XML file
-                console.log("SUSPEND --> "+domainuser.toString());
+                console.log("SUSPEND --> "+domain_user.toString());
                 cont++;
                 if (apply) {
                     // Suspend domain user
                     service.users.update({
-                        userKey: domainuser.email, 
+                        userKey: domain_user.email, 
                         body: {suspended: true}
                     }, function(err, response) {
                         if (err) {
@@ -21,11 +22,11 @@ function deleteDomainUsers(service, auth, xmlusers, domainusers, apply) {
                         }
                     });
                     // Remove from all groups
-                    groupswithdomain = domainuser.groupswithdomain();
-                    for (var i = 0; i < groupswithdomain.length; i++) {
+                    groupswithdomain = domain_user.groupswithdomain();
+                    for (i in groupswithdomain) {
                         service.members.delete({
                             groupKey: groupswithdomain[i], 
-                            memberKey: domainuser.email
+                            memberKey: domain_user.email
                         }, function(err, response) {
                             if (err) {
                                 console.log('The API returned an error: ' + err);
@@ -40,7 +41,7 @@ function deleteDomainUsers(service, auth, xmlusers, domainusers, apply) {
     return cont;
 }
 
-function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
+function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
     var contc = 0;
     var conta = 0;
     var contg = 0;
@@ -49,34 +50,34 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
         var xmluser = xmlusers[user];
         if (!(user in domainusers)) {  // It doesn't exists in domain
             // Email pot ser repetit, comprovar-ho!!
-
-/*
-            if not value.teacher:
-                n = 0
-                emailrepeated = True
-                while emailrepeated:
-                    for dkey, dvalue in domainusers.items():
-                        if (dvalue.email[0:3] == value.email[0:3]):
-                            if (dvalue.email[3:5].isdigit()):
-                                if int(dvalue.email[3:5]) >= int(value.email[3:5]):
-                                    n = int(dvalue.email[3:5])+1
-                                    value.email = value.email[:3]+'{:02d}'.format(n)+GOOGLE_DOMAIN
-                        else:
-                            emailrepeated = False
-*/
-
+            if (!xmluser.teacher) {
+                for (d_user in domainusers) {
+                    // Si hi ha un usuari del domini amb les 3 primeres lletres iguals
+                    if (domainusers[d_user].email().startsWith(xmluser.email().substring(0,3))) {
+                        var n_email_dom = parseInt(domainusers[d_user].email().substring(3,5));
+                        var n_email_xml = parseInt(xmluser.email().substring(3,5));
+                        if (n_email_dom>=n_email_xml) {
+                            var n_email = n_email_dom+1;
+                            xmluser.domainemail = xmluser.email().substring(0,3)+domainuser.pad(n_email,2)+"@"+domain;
+                        }
+                    }
+                }
+            }
             // Afegim l'usuari que cream al diccionari de usuaris del domini
-
-/*
-            domainusers[value.id] = User(id        = value.id,
-                                         name      = "",
-                                         surname   = "",
-                                         email     = value.email,
-                                         suspended = False,
-                                         teacher   = value.teacher
-                                        )
-*/
-
+            domainusers[xmluser.id] = new domainuser.DomainUser(
+                domain, 
+                xmluser.id,
+                xmluser.name, 
+                xmluser.surname1, 
+                xmluser.surname2,
+                xmluser.surname,
+                xmluser.email(), // domainemail
+                xmluser.suspended,   // suspended
+                xmluser.teacher,     // teacher 
+                xmluser.tutor,       // tutor
+                xmluser.withoutcode, // withoutcode
+                xmluser.groups       // groups
+            );
 
             console.log("CREATE --> "+xmluser.toString());
             contc++;
@@ -109,14 +110,14 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
 */
             }
         } else {
-            var domainuser = domainusers[user];
-            if (domainuser.suspended) {
+            var domain_user = domainusers[user];
+            if (domain_user.suspended) {
                 console.log("ACTIVATE --> "+xmluser.toString());
                 conta++;
                 if (apply) {
                     // Suspend domain user
                     service.users.update({
-                        userKey: domainuser.email, 
+                        userKey: domain_user.email, 
                         body: {suspended: true}
                     }, function(err, response) {
                         if (err) {
@@ -130,13 +131,13 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
             // els grups "ee.", "alumnat." i  "tutors"
             // TODO: Insert and delete "tutors" group
             var creategroups = xmluser.groupswithprefixadded().filter(
-                function(x) {return domainuser.groupswithprefix().indexOf(x) < 0 });
-            var deletegroups = domainuser.groupswithprefix().filter(
+                function(x) {return domain_user.groupswithprefix().indexOf(x) < 0 });
+            var deletegroups = domain_user.groupswithprefix().filter(
                 function(x) {return xmluser.groupswithprefixadded().indexOf(x) < 0 });
             if (((creategroups.length>0) || (deletegroups.length>0))
-                        && (!domainuser.suspended)) {
-                console.log("CREATE GROUPS --> "+domainuser.surname+", "+domainuser.name+
-                    " ("+domainuser.email()+") ["+creategroups+"]");
+                        && (!domain_user.suspended)) {
+                console.log("CREATE GROUPS --> "+domain_user.surname+", "+domain_user.name+
+                    " ("+domain_user.email()+") ["+creategroups+"]");
                 contg++;
                 if (apply) {
                     // Actualitzam els grups de l'usuari
@@ -145,13 +146,13 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
                     # https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
                     service.members().insert(
                             groupKey = gr+GOOGLE_DOMAIN,
-                            body = {'email': domainuser.email}
+                            body = {'email': domain_user.email}
                         ).execute()
                 for gr in deletegroups:
                     # https://developers.google.com/admin-sdk/directory/v1/reference/members/delete
                     service.members().delete(
                             groupKey = gr+GOOGLE_DOMAIN,
-                            memberKey = domainuser.email
+                            memberKey = domain_user.email
                         ).execute()
     */
                 }
@@ -165,10 +166,10 @@ function addDomainUsers(service, auth, xmlusers, domainusers, apply) {
     }
 }
 
-function applyDomainChanges(xmlusers, domainusers, apply, callback) {
+function applyDomainChanges(xmlusers, domainusers, domain, apply, callback) {
     domainauth.getDomainAuthorization(function(service, auth) {
         var contd = deleteDomainUsers(service, auth, xmlusers, domainusers, apply);
-        var cont = addDomainUsers(service, auth, xmlusers, domainusers, apply);
+        var cont = addDomainUsers(service, auth, xmlusers, domainusers, domain, apply);
         callback({
             deleted: contd, 
             created: cont.created, 

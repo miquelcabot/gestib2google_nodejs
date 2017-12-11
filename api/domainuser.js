@@ -105,5 +105,6 @@ DomainUser.prototype.toString = function()
 }
 
 module.exports = {
-  DomainUser: DomainUser
+  DomainUser: DomainUser,
+  pad: pad
 }
