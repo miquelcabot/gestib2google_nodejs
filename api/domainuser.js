@@ -77,7 +77,7 @@ function DomainUser(domain, id, name, surname, surname1, surname2, domainemail,
     var gr = [];
     for (var i = 0; i < this.groups.length; i++) {
       group = this.groups[i];
-      if (group.startsWith("alumnat.") || group.startsWith("ee.")) {
+      if (group.startsWith("alumnat.") || group.startsWith("ee.") || group.startsWith("tutors")) {
         gr.push(group);
       }
     }
@@ -94,6 +94,9 @@ function DomainUser(domain, id, name, surname, surname1, surname2, domainemail,
         gr.push("alumnat."+group);
       }
     } 
+    if (this.teacher && this.tutor) {
+      gr.push("tutors");
+    }
     return gr;
   }
 }

@@ -86,7 +86,7 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                 // https://developers.google.com/admin-sdk/reseller/v1/codelab/end-to-end
                 service.users.insert({
                     primaryEmail: xmluser.email(), 
-                    body = { 
+                    body: { 
                         primaryEmail: xmluser.email(), 
                         name: { givenName: xmluser.name, familyName: xmluser.surname }, 
                         orgUnitPath: (xmluser.teacher?'/Professorat':'/Alumnat'),
@@ -100,20 +100,20 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                         return;
                     }
                 });
-/*
-                
 
-                    # Insert all "ee." or "alumnat." groups
-                    for gr in value.setprefixtogroups:
-                        # https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
-                        service.members().insert(
-                                groupKey = gr+GOOGLE_DOMAIN,
-                                body = {'email': value.email}
-                            ).execute()
-                    # TODO Insert "tutors" group
-                except:
-                    print("Error creating user")
-*/
+                // Insert all "ee.",  "alumnat." and "tutors" groups
+                for (gr in xmluser.groupswithprefixadded()) {
+                    // https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
+                    service.members.insert({
+                        groupKey: gr+"@"+domain, 
+                        body: {email: xmluser.email()}
+                    }, function(err, response) {
+                        if (err) {
+                            console.log('The API returned an error: ' + err);
+                            return;
+                        }
+                    });
+                }
             }
         } else {
             var domain_user = domainusers[user];
@@ -142,14 +142,20 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                 function(x) {return xmluser.groupswithprefixadded().indexOf(x) < 0 });
             if (((creategroups.length>0) || (deletegroups.length>0))
                         && (!domain_user.suspended)) {
-                console.log("CREATE GROUPS --> "+domain_user.surname+", "+domain_user.name+
-                    " ("+domain_user.email()+") ["+creategroups+"]");
+                if (creategroups.length>0) {
+                    console.log("CREATE GROUPS --> "+domain_user.surname+", "+domain_user.name+
+                        " ("+domain_user.email()+") ["+creategroups+"]");
+                }
+                if (deletegroups.length>0) {
+                    console.log("DELETE GROUPS --> "+domain_user.surname+", "+domain_user.name+
+                        " ("+domain_user.email()+") ["+deletegroups+"]");
+                }
                 contg++;
                 if (apply) {
                     // Actualitzam els grups de l'usuari
                     for (gr in creategroups) {
                         // https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
-                        service.members.isert({
+                        service.members.insert({
                             groupKey: gr+"@"+domain, 
                             body: {email: domain_user.email()}
                         }, function(err, response) {
