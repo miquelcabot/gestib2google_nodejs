@@ -147,20 +147,30 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                 contg++;
                 if (apply) {
                     // Actualitzam els grups de l'usuari
-    /*
-                for gr in creategroups:
-                    # https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
-                    service.members().insert(
-                            groupKey = gr+GOOGLE_DOMAIN,
-                            body = {'email': domain_user.email}
-                        ).execute()
-                for gr in deletegroups:
-                    # https://developers.google.com/admin-sdk/directory/v1/reference/members/delete
-                    service.members().delete(
-                            groupKey = gr+GOOGLE_DOMAIN,
-                            memberKey = domain_user.email
-                        ).execute()
-    */
+                    for (gr in creategroups) {
+                        // https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
+                        service.members.isert({
+                            groupKey: gr+"@"+domain, 
+                            body: {email: domain_user.email()}
+                        }, function(err, response) {
+                            if (err) {
+                                console.log('The API returned an error: ' + err);
+                                return;
+                            }
+                        });
+                    }
+                    for (gr in deletegroups) {
+                        // https://developers.google.com/admin-sdk/directory/v1/reference/members/delete
+                        service.members.delete({
+                            groupKey: gr+"@"+domain, 
+                            body: {email: domain_user.email()}
+                        }, function(err, response) {
+                            if (err) {
+                                console.log('The API returned an error: ' + err);
+                                return;
+                            }
+                        });
+                    }
                 }
             }
         }
