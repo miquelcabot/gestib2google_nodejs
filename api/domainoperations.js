@@ -3,7 +3,7 @@ var domainuser = require("./domainuser");
 
 function deleteDomainUsers(service, auth, xmlusers, domainusers, apply) {
     var cont = 0;
-    console.log("Deleting domain users...")
+    console.log("Deleting domain users...");
     for (user in domainusers) {     // For every domain user
         var domain_user = domainusers[user];
         if (!domain_user.suspended && !domain_user.withoutcode) {
@@ -13,8 +13,11 @@ function deleteDomainUsers(service, auth, xmlusers, domainusers, apply) {
                 if (apply) {
                     // Suspend domain user
                     service.users.update({
-                        userKey: domain_user.email, 
-                        body: {suspended: true}
+                        auth: auth,
+                        userKey: domain_user.email(), 
+                        resource: {
+                            suspended: true
+                        }
                     }, function(err, response) {
                         if (err) {
                             console.log('The API returned an error: ' + err);
@@ -25,8 +28,9 @@ function deleteDomainUsers(service, auth, xmlusers, domainusers, apply) {
                     groupswithdomain = domain_user.groupswithdomain();
                     for (i in groupswithdomain) {
                         service.members.delete({
+                            auth: auth,
                             groupKey: groupswithdomain[i], 
-                            memberKey: domain_user.email
+                            memberKey: domain_user.email()
                         }, function(err, response) {
                             if (err) {
                                 console.log('The API returned an error: ' + err);
@@ -85,28 +89,31 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                 // Create domain user
                 // https://developers.google.com/admin-sdk/reseller/v1/codelab/end-to-end
                 service.users.insert({
-                    primaryEmail: xmluser.email(), 
-                    body: { 
+                    auth: auth,
+                    resource: { 
                         primaryEmail: xmluser.email(), 
                         name: { givenName: xmluser.name, familyName: xmluser.surname }, 
                         orgUnitPath: (xmluser.teacher?'/Professorat':'/Alumnat'),
                         externalIds: [{ type: 'organization', value: xmluser.id }], 
                         suspended: false,
                         changePasswordAtNextLogin: true,
-                        password: "12345678"}   //Default password
+                        password: "12345678"
+                    }   //Default password
                 }, function(err, response) {
                     if (err) {
                         console.log('The API returned an error: ' + err);
                         return;
                     }
                 });
-
                 // Insert all "ee.",  "alumnat." and "tutors" groups
                 for (gr in xmluser.groupswithprefixadded()) {
                     // https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
                     service.members.insert({
-                        groupKey: gr+"@"+domain, 
-                        body: {email: xmluser.email()}
+                        auth: auth,
+                        groupKey: xmluser.groupswithprefixadded()[gr]+"@"+domain, 
+                        resource: {
+                            email: xmluser.email()
+                        }
                     }, function(err, response) {
                         if (err) {
                             console.log('The API returned an error: ' + err);
@@ -123,8 +130,11 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                 if (apply) {
                     // Suspend domain user
                     service.users.update({
-                        userKey: domain_user.email, 
-                        body: {suspended: true}
+                        auth: auth,
+                        userKey: domain_user.email(), 
+                        resource: {
+                            suspended: true
+                        }
                     }, function(err, response) {
                         if (err) {
                             console.log('The API returned an error: ' + err);
@@ -156,8 +166,11 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                     for (gr in creategroups) {
                         // https://developers.google.com/admin-sdk/directory/v1/reference/members/insert
                         service.members.insert({
-                            groupKey: gr+"@"+domain, 
-                            body: {email: domain_user.email()}
+                            auth: auth,
+                            groupKey: creategroups[gr]+"@"+domain, 
+                            body: {
+                                email: domain_user.email()
+                            }
                         }, function(err, response) {
                             if (err) {
                                 console.log('The API returned an error: ' + err);
@@ -168,8 +181,11 @@ function addDomainUsers(service, auth, xmlusers, domainusers, domain, apply) {
                     for (gr in deletegroups) {
                         // https://developers.google.com/admin-sdk/directory/v1/reference/members/delete
                         service.members.delete({
-                            groupKey: gr+"@"+domain, 
-                            body: {email: domain_user.email()}
+                            auth: auth,
+                            groupKey: deletegroups[gr]+"@"+domain, 
+                            resource: {
+                                email: domain_user.email()
+                            }
                         }, function(err, response) {
                             if (err) {
                                 console.log('The API returned an error: ' + err);
