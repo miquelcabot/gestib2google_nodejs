@@ -16,13 +16,14 @@ console.log(a.user());
 console.log(a.groupswithprefix());
 console.log(a.groupswithprefixadded());
 
-// Test read user domains
-domainread.readDomainUsers("iesemilidarder.com", function(domainusers) {
-    // Test read xml file
-    content = fs.readFileSync('exportacioDadesCentre.xml');
-    parseString(content, function (err, result) {
-        xmlusers = xmlfile.readXmlFile(result, "iesemilidarder.com");
 
+// Test read xml file
+content = fs.readFileSync('exportacioDadesCentre.xml');
+parseString(content, function (err, result) {
+    xmlusers = xmlfile.readXmlFile(result, "iesemilidarder.com");
+    
+    // Test read domain users
+    domainread.readDomainUsers("iesemilidarder.com", function(domainusers) {
         domainoperations.applyDomainChanges(xmlusers, domainusers, "iesemilidarder.com", false, function(counters) {
             console.log(counters.deleted + " users will be suspended");
             console.log(counters.created + " users will be created");

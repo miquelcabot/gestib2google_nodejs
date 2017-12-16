@@ -9,6 +9,7 @@ var parseString = require('xml2js').parseString;
 
 var xmlfile = require('./api/xmlfile.js');
 var domainread = require('./api/domainread.js');
+var domainoperations = require("./api/domainoperations");
 
 var app = express();
 app.use(fileUpload());
@@ -16,7 +17,7 @@ app.use(fileUpload());
 const HTDOCS_FOLDER = 'public';
 
 // Define the port to run on
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 9000);
 
 // Add middleware to console log every request
 app.use(function(req, res, next) {
@@ -34,23 +35,31 @@ app.post('/importgestib', function(req, res) {
   if (!req.files.xmlfile)
     return res.status(400).send('No files were uploaded.');
 
+  // Read XML file
   parseString(req.files.xmlfile.data, function (err, result) {
     xmlusers = xmlfile.readXmlFile(result, req.body.domain);
-    xmlusersstr = "";
-    domainuserstr = "";
 
-    for (user in xmlusers) {
-      xmlusersstr = xmlusersstr + xmlusers[user].toString()+"<br>";
-    }
-
+    // Read domain users
     domainread.readDomainUsers(req.body.domain, function(domainusers) {
-      for (user in domainusers) {
-        domainuserstr = domainuserstr + domainusers[user].toString()+"<br>";
-      }
+        
+        // Apply domain changes
+        domainoperations.applyDomainChanges(xmlusers, domainusers, req.body.domain, req.body.apply, function(counters) {
+            console.log(counters.deleted + " users will be suspended");
+            console.log(counters.created + " users will be created");
+            console.log(counters.activated + " users will be activated");
+            console.log(counters.groupsmodified + " users will change their group membership");
+    
+            res
+                .status(200)
+                .send("<h1>GestIB to Google</h1>"+
+                    "<h2>Changes</h2>"+
+                    counters.deleted + " users will be suspended"+"<br>"+
+                    counters.created + " users will be created"+"<br>"+
+                    counters.activated + " users will be activated"+"<br>"+
+                    counters.groupsmodified + " users will change their group membership"+"<br>");
+        });
 
-      res
-        .status(200)
-        .send("<h1>XML</h1>"+ xmlusersstr + "<h1>Domini</h1>"+ domainuserstr);
+
     });
 
   });
