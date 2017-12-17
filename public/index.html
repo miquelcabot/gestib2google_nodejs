@@ -194,11 +194,9 @@
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.js"></script>
   <!-- Custom scripts for this page-->
-  <script src="js/sb-admin-datatables.js"></script>
+  <!-- <script src="js/sb-admin-datatables.js"></script> -->
   <script>
     $(document).ready(function(){
-        
-
         $("#taulalink").click(function(){
             $("#importarxml").hide();
             $("#taulausuaris").show();
@@ -213,10 +211,10 @@
     app.controller('usersCtrl', function($scope, $http) {
       $("#pleaseWaitDialog").modal();
       $http.get("usersgestib")
-      .then(function (response) {
-        $scope.users = response.data.users;
-        $("#pleaseWaitDialog").modal("hide");
-      });
+        .then(function (response) {
+          $scope.users = response.data.users;
+          $("#pleaseWaitDialog").modal("hide");
+        });
     });
   </script>
 </div>

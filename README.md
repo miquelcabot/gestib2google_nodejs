@@ -14,3 +14,6 @@ To execute:
 ```
 $ node app.js
 ```
+
+## Credits
+Based on Start Bootstrap SB Admin theme. [Link](https://github.com/BlackrockDigital/startbootstrap-sb-admin/)
