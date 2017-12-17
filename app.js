@@ -44,19 +44,20 @@ app.post('/importgestib', function(req, res) {
         
         // Apply domain changes
         domainoperations.applyDomainChanges(xmlusers, domainusers, req.body.domain, req.body.apply, function(counters) {
-            console.log(counters.deleted + " users will be suspended");
-            console.log(counters.created + " users will be created");
-            console.log(counters.activated + " users will be activated");
-            console.log(counters.groupsmodified + " users will change their group membership");
+            var creationstr = req.body.apply?" have been ":" will be ";
+            console.log(counters.deleted + " users"+creationstr+"suspended");
+            console.log(counters.created + " users"+creationstr+"created");
+            console.log(counters.activated + " users"+creationstr+"activated");
+            console.log(counters.groupsmodified + " users"+creationstr+"changed of their group membership");
     
             res
                 .status(200)
                 .send("<h1>GestIB to Google</h1>"+
                     "<h2>Changes</h2>"+
-                    counters.deleted + " users will be suspended"+"<br>"+
-                    counters.created + " users will be created"+"<br>"+
-                    counters.activated + " users will be activated"+"<br>"+
-                    counters.groupsmodified + " users will change their group membership"+"<br>");
+                    counters.deleted + " users"+creationstr+"suspended"+"<br>"+
+                    counters.created + " users"+creationstr+"created"+"<br>"+
+                    counters.activated + " users"+creationstr+"activated"+"<br>"+
+                    counters.groupsmodified + " users"+creationstr+"changed of their group membership"+"<br>");
         });
     });
   });
