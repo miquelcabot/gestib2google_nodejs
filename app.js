@@ -71,13 +71,13 @@ app.get('/usersgestib', function(req, res) {
       users: []
     };
     for (u in domainusers) {
-      if (!domainusers[u].suspended) {
+      if (!domainusers[u].suspended && !domainusers[u].withoutcode) {
         jsonreturn.users.push({
           surname: domainusers[u].surname,
           name: domainusers[u].name,
           email: domainusers[u].email(),
           type: domainusers[u].teacher?"TEACHER":"STUDENT",
-          groups: domainusers[u].groupswithprefixsimple().toString(),
+          groups: domainusers[u].groupswithprefixsimple().join(", "),
         });
       }
     }
