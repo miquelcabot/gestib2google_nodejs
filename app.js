@@ -58,26 +58,34 @@ app.post('/importgestib', function(req, res) {
                     counters.activated + " users will be activated"+"<br>"+
                     counters.groupsmodified + " users will change their group membership"+"<br>");
         });
-
-
     });
-
   });
 });
 
 // Add some routing
-app.get('/json', function(req, res) {
-  console.log("GET the json");
-  res
-    .status(200)
-    .json( {"jsonData" : true} );
-});
+app.get('/usersgestib', function(req, res) {
+  console.log("GET the users json");
+  // Read domain users
+  domainread.readDomainUsers("iesemilidarder.com", function(domainusers) {
+    var jsonreturn = {
+      users: []
+    };
+    for (u in domainusers) {
+      if (!domainusers[u].suspended) {
+        jsonreturn.users.push({
+          surname: domainusers[u].surname,
+          name: domainusers[u].name,
+          email: domainusers[u].email(),
+          type: domainusers[u].teacher?"TEACHER":"STUDENT",
+          groups: domainusers[u].groupswithprefixsimple().toString(),
+        });
+      }
+    }
 
-app.get('/file', function(req, res) {
-  console.log("GET the file");
-  res
-    .status(200)
-    .sendFile(path.join(__dirname, 'app.js'));
+    res
+      .status(200)
+      .json( jsonreturn );
+  });   
 });
 
 // Listen for requests

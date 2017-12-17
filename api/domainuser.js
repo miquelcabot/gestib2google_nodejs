@@ -84,6 +84,17 @@ function DomainUser(domain, id, name, surname, surname1, surname2, domainemail,
     return gr;
   }
 
+  this.groupswithprefixsimple = function() {
+    var gr = [];
+    for (var i = 0; i < this.groups.length; i++) {
+      group = this.groups[i];
+      if (group.startsWith("alumnat.") || group.startsWith("ee.") || group.startsWith("tutors")) {
+        gr.push(group.replace("alumnat.","").replace("ee.",""));
+      }
+    }
+    return gr;
+  }
+
   this.groupswithprefixadded = function() {
     var gr = [];
     for (var i = 0; i < this.groups.length; i++) {
