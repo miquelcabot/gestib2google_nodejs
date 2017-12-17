@@ -16,8 +16,6 @@
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
   <!-- Custom styles for this template-->
   <link href="css/sb-admin.css" rel="stylesheet">
-  <!-- AnglularJS 1.6.6-->
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
 </head>
 
 <body class="fixed-nav sticky-footer bg-dark" id="page-top">
@@ -30,13 +28,13 @@
   <div class="collapse navbar-collapse" id="navbarResponsive">
     <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Usuaris">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" id="taulalink">
           <i class="fa fa-fw fa-table"></i>
           <span class="nav-link-text">Usuaris</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Importar XML">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" id="xmllink">
           <i class="fa fa-fw fa-file"></i>
           <span class="nav-link-text">Importar XML</span>
         </a>
@@ -59,8 +57,9 @@
 </nav>
 <div class="content-wrapper">
   <div class="container-fluid">
+
     <!-- Importar fitxer XML de GestIB -->
-    <div class="card mb-3">
+    <div id="importarxml" class="card mb-3" style="display: none;">
       <div class="card-header">
         <i class="fa fa-file"></i> Importar fitxer XML de GestIB</div>
       <div class="card-body">
@@ -98,7 +97,7 @@
     <!-- Fi importar fitxer XML de GestIB -->
 
     <!-- Taula usuaris-->
-    <div class="card mb-3">
+    <div id="taulausuaris" class="card mb-3">
       <div class="card-header">
         <i class="fa fa-table"></i> Usuaris</div>
       <div class="card-body">
@@ -186,6 +185,8 @@
       </div>
     </div>
   </div>
+  <!-- AnglularJS 1.6.6-->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -198,6 +199,18 @@
   <script src="js/sb-admin.js"></script>
   <!-- Custom scripts for this page-->
   <script src="js/sb-admin-datatables.js"></script>
+  <script>
+    $(document).ready(function(){
+        $("#taulalink").click(function(){
+            $("#importarxml").hide();
+            $("#taulausuaris").show();
+        });
+        $("#xmllink").click(function(){
+            $("#taulausuaris").hide();
+            $("#importarxml").show();
+        });
+    });
+  </script>
 </div>
 </body>
 
