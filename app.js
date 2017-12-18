@@ -31,7 +31,7 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, HTDOCS_FOLDER)));
 
 app.post('/importgestib', function(req, res) {
-  console.log("Received the XML file to import");
+  console.log("Received the XML file to import...");
   if (!req.files.xmlfile)
     return res.status(400).send('No files were uploaded.');
 
