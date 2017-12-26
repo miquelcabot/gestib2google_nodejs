@@ -33,7 +33,7 @@ app.use(express.static(path.join(__dirname, HTDOCS_FOLDER)));
 app.post('/importgestib', function(req, res) {
   console.log("Received the XML file to import");
   if (!req.files.xmlfile)
-    return res.status(400).send('No files were uploaded.');
+    return res.status(400).json( { messages: [{message: "No files were uploaded."}]} );
 
   // Read XML file
   parseString(req.files.xmlfile.data, function (err, result) {
@@ -52,12 +52,13 @@ app.post('/importgestib', function(req, res) {
     
             res
                 .status(200)
-                .send("<h1>GestIB to Google</h1>"+
-                    "<h2>Changes</h2>"+
-                    counters.deleted + " users"+creationstr+"suspended"+"<br>"+
-                    counters.created + " users"+creationstr+"created"+"<br>"+
-                    counters.activated + " users"+creationstr+"activated"+"<br>"+
-                    counters.groupsmodified + " users"+creationstr+"changed of their group membership"+"<br>");
+                .json( { messages: [
+                  {message: counters.deleted + " users"+creationstr+"suspended"},
+                  {message: counters.created + " users"+creationstr+"created"},
+                  {message: counters.activated + " users"+creationstr+"activated"},
+                  {message: counters.groupsmodified + " users"+creationstr+"changed of their group membership"},
+                  ]}
+                );
         });
     });
   });

@@ -59,39 +59,61 @@
   <div class="container-fluid">
 
     <!-- Importar fitxer XML de GestIB -->
-    <div id="importarxml" class="card mb-3" style="display: none;">
-      <div class="card-header">
-        <i class="fa fa-file"></i> Importar fitxer XML de GestIB</div>
-      <div class="card-body">
-        <form action="importgestib" method="POST" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="xmlfile">Fitxer XML de GestIB</label>
-            <input class="form-control" id="xmlfile" name="xmlfile" type="file" placeholder="File">
-          </div>
-          <div class="form-group">
-            <label for="domain">Domini</label>
-            <input class="form-control" id="domain" name="domain" type="text" placeholder="Domini" value="iesemilidarder.com">
-          </div>
-        <!--  <div class="form-group">
-            <label for="tutorsgroup">Nom del grup de tutors</label>
-            <input class="form-control" id="tutorsgroup" name="tutorsgroup" type="text" placeholder="Grup tutors" value="tutors">
-          </div>
-          <div class="form-group">
-            <label for="teachersgroup">Prefix dels grups de professors</label>
-            <input class="form-control" id="teachersgroup" name="teachersgroup" type="text" placeholder="Prefix" value="ee.">
-          </div>
-          <div class="form-group">
-            <label for="studentsgroup">Prefix dels grups d'alumnes</label>
-            <input class="form-control" id="studentsgroup" name="studentsgroup" type="text" placeholder="Prefix" value="alumnat.">
-          </div> -->
-          <div class="form-group">
-            <div class="form-check">
-              <label class="form-check-label"> 
-              <input class="form-check-input" id="apply" name="apply" type="checkbox"> Aplicar canvis</label>
+    <div id="importarxml" style="display: none;" ng-controller="xmlCtrl">
+      <div class="card mb-3" >
+        <div class="card-header">
+          <i class="fa fa-file"></i> Importar fitxer XML de GestIB</div>
+        <div class="card-body">
+          <form action="importgestib" ng-submit="submit()" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="xmlfile">Fitxer XML de GestIB</label>
+              <input class="form-control" id="xmlfile" name="xmlfile" type="file" placeholder="File">
+            </div>
+            <div class="form-group">
+              <label for="domain">Domini</label>
+              <input class="form-control" id="domain" name="domain" type="text" placeholder="Domini" value="iesemilidarder.com">
+            </div>
+          <!--  <div class="form-group">
+              <label for="tutorsgroup">Nom del grup de tutors</label>
+              <input class="form-control" id="tutorsgroup" name="tutorsgroup" type="text" placeholder="Grup tutors" value="tutors">
+            </div>
+            <div class="form-group">
+              <label for="teachersgroup">Prefix dels grups de professors</label>
+              <input class="form-control" id="teachersgroup" name="teachersgroup" type="text" placeholder="Prefix" value="ee.">
+            </div>
+            <div class="form-group">
+              <label for="studentsgroup">Prefix dels grups d'alumnes</label>
+              <input class="form-control" id="studentsgroup" name="studentsgroup" type="text" placeholder="Prefix" value="alumnat.">
+            </div> -->
+            <div class="form-group">
+              <div class="form-check">
+                <label class="form-check-label"> 
+                <input class="form-check-input" id="apply" name="apply" type="checkbox"> Aplicar canvis</label>
+              </div>
+            </div>
+            <input type="submit" value="Importar">
+          </form>
+        </div>
+      </div>
+      <div class="card mb-3" >
+          <div class="card-header">
+            <i class="fa fa-table"></i> Resultats de la importació</div>
+          <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                  <thead>
+                  <tr>
+                    <th>Missatge</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr ng-repeat="m in messages">
+                    <td>{{ m.message }}</td>
+                  </tr>
+                  </tbody>
+                </table>
             </div>
           </div>
-          <input type="submit" value="Importar">
-        </form>
       </div>
     </div>
     <!-- Fi importar fitxer XML de GestIB -->
@@ -216,6 +238,13 @@
           $("#pleaseWaitDialog").modal("hide");
         });
     });
+
+    app.controller('xmlCtrl', ['$scope', function($scope) {
+      $scope.submit = function() {
+        $scope.messages = [];
+        $scope.messages.push("hola");
+      };
+    }]);
   </script>
 </div>
 </body>
