@@ -17,7 +17,8 @@ app.use(fileUpload());
 const HTDOCS_FOLDER = 'public';
 
 // Define the port to run on
-app.set('port', process.env.PORT || 9000);
+app.set('port', process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
+app.set('ip', process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0');
 
 // Add middleware to console log every request
 app.use(function(req, res, next) {
@@ -91,8 +92,8 @@ app.get('/usersgestib', function(req, res) {
 });
 
 // Listen for requests
-var server = app.listen(app.get('port'), function() {
+var server = app.listen(app.get('port'), app.get('ip'), function() {
   var port = server.address().port;
-  console.log('Server running on port ' + port);
+  console.log('Server running on http://%s:%s', app.get('ip'), port);
   console.log('Press CTRL+C to stop');
 });
