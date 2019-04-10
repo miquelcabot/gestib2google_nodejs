@@ -1,4 +1,4 @@
-# gestib2googleweb
+# gestib2google_nodejs
 
 GestIB to Google XML conversion
 

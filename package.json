@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/miquelcabot/gestib2googleweb.git"
+    "url": "git+https://github.com/miquelcabot/gestib2google_nodejs.git"
   },
   "keywords": [
     "server",
@@ -23,9 +23,9 @@
   "author": "Miquel A. Cabot",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/miquelcabot/gestib2googleweb/issues"
+    "url": "https://github.com/miquelcabot/gestib2google_nodejs/issues"
   },
-  "homepage": "https://github.com/miquelcabot/gestib2googleweb#readme",
+  "homepage": "https://github.com/miquelcabot/gestib2google_nodejs#readme",
   "dependencies": {
     "express": "^4.13.3",
     "express-fileupload": "^0.3.0",

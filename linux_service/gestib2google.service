@@ -7,8 +7,8 @@ User=root
 Group=root
 Restart=always
 KillSignal=SIGQUIT
-WorkingDirectory=/home/ubuntu/gestib2googleweb
-ExecStart=/home/ubuntu/gestib2googleweb/app.js
+WorkingDirectory=/home/ubuntu/gestib2google_nodejs
+ExecStart=/home/ubuntu/gestib2google_nodejs/app.js
 
 [Install]
 WantedBy=multi-user.target
