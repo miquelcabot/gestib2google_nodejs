@@ -1,7 +1,7 @@
 {
   "name": "gestib2google",
   "version": "1.0.0",
-  "description": "GestIB to Google XML conversion",
+  "description": "Conversió de fitxer XML del GestIB al domini de Google, amb NodeJS i ReactJS",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -27,13 +27,12 @@
   },
   "homepage": "https://github.com/miquelcabot/gestib2google_nodejs#readme",
   "dependencies": {
-    "express": "^4.13.3",
-    "express-fileupload": "^0.3.0",
-    "google-auth-library": "^0.12.0",
-    "googleapis": "^23.0.0",
-    "xml2js": "^0.4.19"
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.6-alpha.6",
+    "googleapis": "^44.0.0",
+    "xml2js": "^0.4.22"
   },
   "devDependencies": {
-    "mocha": "^2.3.3"
+    "mocha": "^6.2.2"
   }
 }
